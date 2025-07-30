@@ -14,15 +14,15 @@ export default function LocationPermission({ setCurrentScreen }: LocationPermiss
       navigator.geolocation.getCurrentPosition(
         (position) => {
           console.log("Location granted:", position.coords)
-          setCurrentScreen("notificationPermission")
+          setCurrentScreen("personalizedSummary")
         },
         (error) => {
           console.log("Location denied:", error)
-          setCurrentScreen("notificationPermission")
+          setCurrentScreen("personalizedSummary")
         },
       )
     } else {
-      setCurrentScreen("notificationPermission")
+      setCurrentScreen("personalizedSummary")
     }
   }
 
@@ -37,9 +37,25 @@ export default function LocationPermission({ setCurrentScreen }: LocationPermiss
           ¿Querés encontrar promociones cerca tuyo?
         </h1>
 
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 leading-relaxed">
-          Te mostraremos ofertas de comercios en tu zona para que no te pierdas ninguna oportunidad
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+          Te mostraremos ofertas de comercios en tu zona para que no te pierdas ninguna oportunidad de ahorro
         </p>
+
+        <div className="bg-sky-50 dark:bg-sky-900/20 rounded-2xl p-4 mb-8">
+          <div className="flex items-start space-x-3">
+            <div className="w-8 h-8 bg-sky-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+              <span className="text-white text-sm">💡</span>
+            </div>
+            <div>
+              <p className="text-sky-800 dark:text-sky-200 font-medium mb-1">¿Por qué es útil?</p>
+              <p className="text-sky-700 dark:text-sky-300 text-sm">
+                • Descuentos exclusivos en comercios cercanos
+                <br />• Alertas cuando pasés cerca de una promo
+                <br />• Mapas con todas las ofertas de tu zona
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-4">
           <Button
@@ -51,7 +67,7 @@ export default function LocationPermission({ setCurrentScreen }: LocationPermiss
           </Button>
 
           <Button
-            onClick={() => setCurrentScreen("notificationPermission")}
+            onClick={() => setCurrentScreen("personalizedSummary")}
             variant="ghost"
             className="w-full h-16 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold text-lg"
           >

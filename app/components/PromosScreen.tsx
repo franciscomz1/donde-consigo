@@ -51,6 +51,26 @@ const mockPromos = [
 
 export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
   const [selectedDay, setSelectedDay] = useState(1)
+  // Agregar estado para el modal:
+  const [selectedPromo, setSelectedPromo] = useState<any>(null)
+
+  // Agregar función para mostrar detalles:
+  const showPromoDetails = (promo: any) => {
+    setSelectedPromo(promo)
+  }
+
+  // Agregar filtros creativos para el consumidor argentino:
+  const categories = [
+    { id: "all", name: "Todas", icon: "🏷️" },
+    { id: "supermercados", name: "Super", icon: "🛒" },
+    { id: "indumentaria", name: "Ropa", icon: "👕" },
+    { id: "farmacia", name: "Farmacia", icon: "💊" },
+    { id: "carniceria", name: "Carnes", icon: "🥩" },
+    { id: "combustible", name: "YPF/Shell", icon: "⛽" },
+    { id: "restaurantes", name: "Comida", icon: "🍕" },
+  ]
+
+  const [selectedCategory, setSelectedCategory] = useState("all")
 
   return (
     <div className="p-4">
@@ -63,6 +83,24 @@ export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
         <Button variant="ghost" size="sm" className="rounded-full">
           <Filter className="w-5 h-5" />
         </Button>
+      </div>
+
+      {/* Category filters */}
+      <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            onClick={() => setSelectedCategory(category.id)}
+            className={`flex-shrink-0 px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-200 ${
+              selectedCategory === category.id
+                ? "bg-sky-500 text-white shadow-lg"
+                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+            }`}
+          >
+            <span className="mr-2">{category.icon}</span>
+            {category.name}
+          </button>
+        ))}
       </div>
 
       {/* Week calendar */}
@@ -99,7 +137,8 @@ export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
           {mockPromos.map((promo) => (
             <div
               key={promo.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
+              onClick={() => showPromoDetails(promo)}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
@@ -138,6 +177,61 @@ export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
       <Button className="fixed bottom-24 right-4 w-14 h-14 rounded-full bg-sky-500 hover:bg-sky-600 text-white shadow-xl">
         <Calendar className="w-6 h-6" />
       </Button>
+
+      {selectedPromo && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Detalles de la promo</h3>
+              <button
+                onClick={() => setSelectedPromo(null)}
+                className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 ${selectedPromo.color} rounded-xl flex items-center justify-center`}>
+                  <span className="text-white font-bold text-sm">{selectedPromo.bank.slice(0, 2)}</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white">{selectedPromo.bank}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedPromo.category}</p>
+                </div>
+              </div>
+
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4">
+                <p className="text-2xl font-bold text-green-600 mb-2">{selectedPromo.discount} OFF</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-2">{selectedPromo.title}</p>
+              </div>
+
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <p>
+                  <strong>Válido:</strong> {selectedPromo.validUntil}
+                </p>
+                <p>
+                  <strong>Condiciones:</strong>
+                </p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Válido para compras presenciales</li>
+                  <li>No acumulable con otras promociones</li>
+                  <li>Sujeto a stock disponible</li>
+                  <li>Máximo 1 uso por cliente por día</li>
+                </ul>
+              </div>
+
+              <Button
+                onClick={() => setSelectedPromo(null)}
+                className="w-full bg-sky-500 hover:bg-sky-600 text-white rounded-2xl"
+              >
+                Entendido
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

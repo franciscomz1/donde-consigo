@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Settings, Calendar, Trophy, Gift, Moon, Sun, LogOut, Edit } from "lucide-react"
 import type { User } from "../types"
+import GamificationBadge from "./GamificationBadge"
 
 interface ProfileScreenProps {
   user: User | null
@@ -66,75 +67,107 @@ export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileSc
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <Button
-          variant="ghost"
-          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
-        >
-          <Gift className="w-6 h-6 text-sky-500" />
-          <span className="text-sm font-medium text-gray-900 dark:text-white">Canjear puntos</span>
-        </Button>
-        <Button
-          variant="ghost"
-          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
-        >
-          <Trophy className="w-6 h-6 text-yellow-500" />
-          <span className="text-sm font-medium text-gray-900 dark:text-white">Ranking</span>
-        </Button>
-      </div>
+        {/* Gamification badges */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <GamificationBadge type="streak" count={7} title="Días seguidos" />
+          <GamificationBadge type="explorer" count={12} title="Lugares visitados" />
+          <GamificationBadge type="saver" count={850} title="$ Ahorrados" />
+        </div>
 
-      {/* Stats */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Mis estadísticas</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Promociones compartidas</span>
-            <span className="font-semibold text-gray-900 dark:text-white">12</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Likes recibidos</span>
-            <span className="font-semibold text-gray-900 dark:text-white">89</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">Puntos canjeados</span>
-            <span className="font-semibold text-gray-900 dark:text-white">150</span>
+        {/* Logros recientes */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Logros recientes</h3>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
+              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">🔥</div>
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white text-sm">¡Racha de 7 días!</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Usaste la app toda la semana</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">🗺️</div>
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white text-sm">Explorador</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Visitaste 12 comercios diferentes</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Settings */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Configuración</h3>
-        <div className="space-y-2">
-          <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
-            <Settings className="w-5 h-5 mr-3" />
-            Editar bancos preferidos
-          </Button>
-          <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
-            <Calendar className="w-5 h-5 mr-3" />
-            Ver calendario personalizado
+        {/* Quick actions */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Button
+            variant="ghost"
+            className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
+          >
+            <Gift className="w-6 h-6 text-sky-500" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">Canjear puntos</span>
           </Button>
           <Button
             variant="ghost"
-            onClick={() => setDarkMode(!darkMode)}
-            className="w-full justify-between h-12 text-gray-700 dark:text-gray-200"
+            className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
           >
-            <div className="flex items-center">
-              {darkMode ? <Sun className="w-5 h-5 mr-3" /> : <Moon className="w-5 h-5 mr-3" />}
-              Modo {darkMode ? "claro" : "oscuro"}
-            </div>
+            <Trophy className="w-6 h-6 text-yellow-500" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">Ranking</span>
           </Button>
         </div>
-      </div>
 
-      {/* Logout */}
-      <Button variant="ghost" className="w-full h-12 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl">
-        <LogOut className="w-5 h-5 mr-3" />
-        Cerrar sesión
-      </Button>
+        {/* Stats */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Mis estadísticas</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Promociones compartidas</span>
+              <span className="font-semibold text-gray-900 dark:text-white">12</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Likes recibidos</span>
+              <span className="font-semibold text-gray-900 dark:text-white">89</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Puntos canjeados</span>
+              <span className="font-semibold text-gray-900 dark:text-white">150</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Configuración</h3>
+          <div className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
+              <Settings className="w-5 h-5 mr-3" />
+              Editar bancos preferidos
+            </Button>
+            <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
+              <Calendar className="w-5 h-5 mr-3" />
+              Ver calendario personalizado
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setDarkMode(!darkMode)}
+              className="w-full justify-between h-12 text-gray-700 dark:text-gray-200"
+            >
+              <div className="flex items-center">
+                {darkMode ? <Sun className="w-5 h-5 mr-3" /> : <Moon className="w-5 h-5 mr-3" />}
+                Modo {darkMode ? "claro" : "oscuro"}
+              </div>
+            </Button>
+          </div>
+        </div>
+
+        {/* Logout */}
+        <Button
+          variant="ghost"
+          className="w-full h-12 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl"
+        >
+          <LogOut className="w-5 h-5 mr-3" />
+          Cerrar sesión
+        </Button>
+      </div>
     </div>
   )
 }

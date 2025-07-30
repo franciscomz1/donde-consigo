@@ -12,14 +12,14 @@ interface BankSelectionProps {
 }
 
 const availableBanks: Bank[] = [
-  { id: "galicia", name: "Galicia", color: "bg-orange-500", icon: "🏦" },
-  { id: "bbva", name: "BBVA", color: "bg-blue-600", icon: "🏦" },
-  { id: "santander", name: "Santander", color: "bg-red-500", icon: "🏦" },
-  { id: "mercadopago", name: "Mercado Pago", color: "bg-blue-400", icon: "💳" },
-  { id: "brubank", name: "Brubank", color: "bg-purple-500", icon: "🏦" },
-  { id: "naranja", name: "Naranja X", color: "bg-orange-600", icon: "💳" },
-  { id: "icbc", name: "ICBC", color: "bg-red-600", icon: "🏦" },
-  { id: "uala", name: "Ualá", color: "bg-pink-500", icon: "💳" },
+  { id: "galicia", name: "Galicia", color: "bg-orange-500", icon: "🟠" },
+  { id: "bbva", name: "BBVA", color: "bg-blue-600", icon: "🔵" },
+  { id: "santander", name: "Santander", color: "bg-red-500", icon: "🔴" },
+  { id: "mercadopago", name: "Mercado Pago", color: "bg-blue-400", icon: "💙" },
+  { id: "brubank", name: "Brubank", color: "bg-purple-500", icon: "🟣" },
+  { id: "naranja", name: "Naranja X", color: "bg-orange-600", icon: "🧡" },
+  { id: "icbc", name: "ICBC", color: "bg-red-600", icon: "❤️" },
+  { id: "uala", name: "Ualá", color: "bg-pink-500", icon: "💗" },
 ]
 
 export default function BankSelection({ setCurrentScreen, selectedBanks, setSelectedBanks }: BankSelectionProps) {
@@ -100,7 +100,7 @@ export default function BankSelection({ setCurrentScreen, selectedBanks, setSele
 
         <div className="mt-12 max-w-md mx-auto">
           <Button
-            onClick={() => setCurrentScreen("personalizedSummary")}
+            onClick={() => setCurrentScreen("locationPermission")}
             disabled={selectedBanks.length === 0}
             className="w-full h-16 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 text-white font-semibold text-lg rounded-2xl shadow-xl"
           >

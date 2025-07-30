@@ -1,57 +1,76 @@
 "use client"
 
 import { useState } from "react"
-import OnboardingScreen from "./components/OnboardingScreen"
+import OnboardingCarousel from "./components/OnboardingCarousel"
+import LoginScreen from "./components/LoginScreen"
+import RegisterScreen from "./components/RegisterScreen"
+import SignInScreen from "./components/SignInScreen"
+import BankSelection from "./components/BankSelection"
+import PersonalizedSummary from "./components/PersonalizedSummary"
+import LocationPermission from "./components/LocationPermission"
+import NotificationPermission from "./components/NotificationPermission"
+import WelcomeReward from "./components/WelcomeReward"
+import MainApp from "./components/MainApp"
+import type { User, Bank } from "./types"
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState(0)
+  const [currentScreen, setCurrentScreen] = useState("onboarding")
+  const [darkMode, setDarkMode] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [selectedBanks, setSelectedBanks] = useState<Bank[]>([])
 
-  const screens = [
-    {
-      icon: "gift",
-      title: "Promos todos los días",
-      subtitle: "Descubrí qué banco te conviene según el día y tu tarjeta",
-      gradient: "from-pink-400 via-purple-400 to-indigo-400",
-      buttonText: "Siguiente",
-    },
-    {
-      icon: "location",
-      title: "Descuentos cerca tuyo",
-      subtitle: "Buscá ofertas en tiempo real por ubicación o categoría",
-      gradient: "from-cyan-400 via-blue-400 to-purple-400",
-      buttonText: "Siguiente",
-    },
-    {
-      icon: "star",
-      title: "Sumá y ganá puntos",
-      subtitle: "Compartí promociones, sumá puntos y canjeá beneficios",
-      gradient: "from-emerald-400 via-teal-400 to-cyan-400",
-      buttonText: "Empezar",
-    },
-  ]
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case "onboarding":
+        return <OnboardingCarousel onStart={() => setCurrentScreen("login")} />
 
-  const handleNext = () => {
-    if (currentScreen < screens.length - 1) {
-      setCurrentScreen(currentScreen + 1)
-    } else {
-      // Handle completion - navigate to main app
-      console.log("Onboarding completed!")
+      case "login":
+        return <LoginScreen setCurrentScreen={setCurrentScreen} darkMode={darkMode} setDarkMode={setDarkMode} />
+
+      case "register":
+        return <RegisterScreen setCurrentScreen={setCurrentScreen} />
+
+      case "signin":
+        return <SignInScreen setCurrentScreen={setCurrentScreen} />
+
+      case "bankSelection":
+        return (
+          <BankSelection
+            setCurrentScreen={setCurrentScreen}
+            selectedBanks={selectedBanks}
+            setSelectedBanks={setSelectedBanks}
+          />
+        )
+
+      case "personalizedSummary":
+        return <PersonalizedSummary setCurrentScreen={setCurrentScreen} selectedBanks={selectedBanks} />
+
+      case "locationPermission":
+        return <LocationPermission setCurrentScreen={setCurrentScreen} />
+
+      case "notificationPermission":
+        return <NotificationPermission setCurrentScreen={setCurrentScreen} />
+
+      case "welcomeReward":
+        return (
+          <WelcomeReward
+            setCurrentScreen={setCurrentScreen}
+            setUser={setUser}
+            onCompleteOnboarding={() => setCurrentScreen("main")}
+          />
+        )
+
+      case "main":
+        return <MainApp user={user} selectedBanks={selectedBanks} darkMode={darkMode} setDarkMode={setDarkMode} />
+
+      default:
+        return <OnboardingCarousel onStart={() => setCurrentScreen("login")} />
     }
   }
 
-  const handleDotClick = (index: number) => {
-    setCurrentScreen(index)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <OnboardingScreen
-        {...screens[currentScreen]}
-        currentStep={currentScreen}
-        totalSteps={screens.length}
-        onNext={handleNext}
-        onDotClick={handleDotClick}
-      />
+    <div className={`min-h-screen ${darkMode ? "dark" : ""}`}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">{renderScreen()}</div>
     </div>
   )
 }

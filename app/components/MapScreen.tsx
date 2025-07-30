@@ -12,6 +12,9 @@ const mockLocations = [
     distance: "200m",
     category: "Farmacia",
     validUntil: "20:00",
+    address: "Av. Santa Fe 3421",
+    userReported: false,
+    rating: 4.5,
   },
   {
     id: "2",
@@ -20,14 +23,31 @@ const mockLocations = [
     distance: "500m",
     category: "Supermercado",
     validUntil: "23:59",
+    address: "Av. Cabildo 2502",
+    userReported: false,
+    rating: 4.2,
   },
   {
     id: "3",
-    name: "Zara Palermo",
-    promo: "3 cuotas sin interés",
+    name: "Carnicería Don Juan",
+    promo: "25% OFF efectivo",
+    distance: "300m",
+    category: "Carnicería",
+    validUntil: "19:00",
+    address: "Juramento 1845",
+    userReported: true,
+    rating: 4.8,
+  },
+  {
+    id: "4",
+    name: "YPF Núñez",
+    promo: "10% OFF con Mercado Pago",
     distance: "800m",
-    category: "Indumentaria",
+    category: "Combustible",
     validUntil: "Todo el día",
+    address: "Av. del Libertador 6789",
+    userReported: false,
+    rating: 4.0,
   },
 ]
 
@@ -73,27 +93,34 @@ export default function MapScreen() {
 
       {viewMode === "map" ? (
         /* Map View */
-        <div className="relative h-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+        <div className="relative h-full bg-gradient-to-br from-blue-50 to-green-50 dark:bg-gray-700">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-300">Mapa interactivo</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Aquí se mostraría el mapa con los puntos de promociones
-              </p>
+              <MapPin className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+              <p className="text-gray-700 dark:text-gray-300 font-medium">Mapa interactivo</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{mockLocations.length} promociones cerca tuyo</p>
             </div>
           </div>
 
-          {/* Mock map pins */}
-          <div className="absolute top-1/4 left-1/3 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-            <span className="text-white text-xs font-bold">1</span>
-          </div>
-          <div className="absolute top-1/2 right-1/3 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-bounce delay-300">
-            <span className="text-white text-xs font-bold">2</span>
-          </div>
-          <div className="absolute bottom-1/3 left-1/2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce delay-500">
-            <span className="text-white text-xs font-bold">3</span>
-          </div>
+          {/* Pins más realistas en el mapa */}
+          {mockLocations.map((location, index) => (
+            <div
+              key={location.id}
+              className={`absolute w-10 h-10 rounded-full flex items-center justify-center shadow-lg cursor-pointer transform hover:scale-110 transition-all duration-200 ${
+                location.userReported ? "bg-purple-500 animate-pulse" : "bg-red-500"
+              }`}
+              style={{
+                top: `${25 + index * 15}%`,
+                left: `${30 + index * 20}%`,
+              }}
+              onClick={() => console.log(`Clicked on ${location.name}`)}
+            >
+              <span className="text-white text-xs font-bold">{location.discount || location.promo.split(" ")[0]}</span>
+              {location.userReported && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white"></div>
+              )}
+            </div>
+          ))}
         </div>
       ) : (
         /* List View */
@@ -101,24 +128,38 @@ export default function MapScreen() {
           {mockLocations.map((location) => (
             <div
               key={location.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-300 dark:border-gray-600 shadow-sm"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{location.name}</h3>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{location.name}</h3>
+                    {location.userReported && (
+                      <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 text-xs rounded-full">
+                        👥 Reportado
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sky-600 dark:text-sky-400 font-medium mb-1">{location.promo}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
                     <span>📍 {location.distance}</span>
                     <span>🏷️ {location.category}</span>
-                    <span>⏰ Hasta {location.validUntil}</span>
+                    <span>⏰ {location.validUntil}</span>
+                    <span>⭐ {location.rating}</span>
                   </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{location.address}</p>
                 </div>
               </div>
 
-              <Button size="sm" className="w-full bg-sky-500 hover:bg-sky-600 text-white rounded-xl">
-                <Navigation className="w-4 h-4 mr-2" />
-                Cómo llegar
-              </Button>
+              <div className="flex space-x-2">
+                <Button size="sm" className="flex-1 bg-sky-500 hover:bg-sky-600 text-white rounded-xl">
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Cómo llegar
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-xl">
+                  📞
+                </Button>
+              </div>
             </div>
           ))}
         </div>

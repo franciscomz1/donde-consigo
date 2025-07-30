@@ -24,7 +24,7 @@ export default function SignInScreen({ setCurrentScreen }: SignInScreenProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle sign in logic here
+    // Handle sign in logic here - skip onboarding for existing users
     setCurrentScreen("main")
   }
 

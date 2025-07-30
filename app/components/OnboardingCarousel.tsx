@@ -94,6 +94,10 @@ export default function OnboardingCarousel({ onStart }: OnboardingCarouselProps)
     }, 300)
   }
 
+  const handleStart = () => {
+    onStart() // Esto debería llamar a setCurrentScreen("login")
+  }
+
   const currentSlideData = slides[currentSlide]
 
   return (
@@ -178,7 +182,7 @@ export default function OnboardingCarousel({ onStart }: OnboardingCarouselProps)
           </Button>
         ) : (
           <Button
-            onClick={onStart}
+            onClick={handleStart}
             disabled={isAnimating}
             className={`w-full h-16 bg-gradient-to-r ${currentSlideData.accentColor} hover:shadow-2xl text-white font-semibold text-xl rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50`}
           >

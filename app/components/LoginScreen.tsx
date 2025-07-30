@@ -30,15 +30,24 @@ export default function LoginScreen({ setCurrentScreen, darkMode, setDarkMode }:
       {/* Logo/Icon area */}
       <div className="flex-1 flex items-center justify-center px-8">
         <div className="w-full max-w-sm">
-          <div className="w-32 h-32 bg-gradient-to-br from-sky-400 to-sky-600 rounded-3xl flex items-center justify-center mx-auto mb-16 shadow-2xl">
-            <span className="text-white font-bold text-3xl">DC</span>
+          <div className="w-32 h-32 bg-gradient-to-br from-sky-400 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-16 shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+            <div className="relative z-10 text-center">
+              <div className="text-white font-bold text-2xl mb-1">Dónde</div>
+              <div className="text-white/90 font-medium text-lg">Consigo</div>
+              <div className="w-8 h-1 bg-white/60 rounded-full mx-auto mt-2"></div>
+            </div>
           </div>
 
           {/* Login buttons */}
           <div className="space-y-4">
             <Button
               className="w-full h-16 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold text-lg rounded-2xl shadow-lg"
-              onClick={() => {}}
+              onClick={() => {
+                // Simular autenticación con Google
+                console.log("Iniciando sesión con Google...")
+                setCurrentScreen("bankSelection")
+              }}
             >
               <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
                 <path
