@@ -42,7 +42,7 @@ export default function PersonalizedSummary({ setCurrentScreen, selectedBanks }:
             {weekDays.map((day, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-600 text-center"
+                className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700 text-center"
               >
                 <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-1">{day.day}</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">{day.date}</p>
@@ -73,7 +73,7 @@ export default function PersonalizedSummary({ setCurrentScreen, selectedBanks }:
             {selectedBanks.slice(0, 3).map((bank, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-600 shadow-sm"
+                className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-12 h-12 ${bank.color} rounded-xl flex items-center justify-center`}>

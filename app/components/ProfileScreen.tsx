@@ -29,7 +29,7 @@ export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileSc
   return (
     <div className="p-4">
       {/* Profile header */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 mb-6 border border-gray-200 dark:border-gray-600">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 mb-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-4 mb-6">
           <div
             className={`w-20 h-20 bg-gradient-to-br ${getLevelColor(user.level)} rounded-2xl flex items-center justify-center shadow-lg`}
@@ -72,14 +72,14 @@ export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileSc
       <div className="grid grid-cols-2 gap-4 mb-6">
         <Button
           variant="ghost"
-          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl flex flex-col items-center justify-center space-y-2"
+          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
         >
           <Gift className="w-6 h-6 text-sky-500" />
           <span className="text-sm font-medium text-gray-900 dark:text-white">Canjear puntos</span>
         </Button>
         <Button
           variant="ghost"
-          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl flex flex-col items-center justify-center space-y-2"
+          className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
         >
           <Trophy className="w-6 h-6 text-yellow-500" />
           <span className="text-sm font-medium text-gray-900 dark:text-white">Ranking</span>
@@ -87,7 +87,7 @@ export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileSc
       </div>
 
       {/* Stats */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-600">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Mis estadísticas</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -106,7 +106,7 @@ export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileSc
       </div>
 
       {/* Settings */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-600">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Configuración</h3>
         <div className="space-y-2">
           <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">

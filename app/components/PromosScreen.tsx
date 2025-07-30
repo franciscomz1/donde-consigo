@@ -74,7 +74,7 @@ export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
             className={`flex-shrink-0 p-3 rounded-2xl text-center min-w-[60px] transition-all duration-200 ${
               selectedDay === index
                 ? "bg-sky-500 text-white shadow-lg"
-                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600"
+                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
             }`}
           >
             <p className="text-sm font-medium">{day.day}</p>
@@ -99,7 +99,7 @@ export default function PromosScreen({ selectedBanks }: PromosScreenProps) {
           {mockPromos.map((promo) => (
             <div
               key={promo.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-600 shadow-sm"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">

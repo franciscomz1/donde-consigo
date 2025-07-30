@@ -49,13 +49,13 @@ export default function CommunityScreen({ user }: CommunityScreenProps) {
   const getLevelColor = (level: string) => {
     switch (level) {
       case "Novato":
-        return "bg-green-500"
+        return "bg-green-500 text-white"
       case "Experto":
-        return "bg-blue-500"
+        return "bg-blue-500 text-white"
       case "Leyenda":
-        return "bg-purple-500"
+        return "bg-purple-500 text-white"
       default:
-        return "bg-gray-500"
+        return "bg-gray-500 text-white"
     }
   }
 
@@ -101,7 +101,7 @@ export default function CommunityScreen({ user }: CommunityScreenProps) {
         {mockPosts.map((post) => (
           <div
             key={post.id}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-600 shadow-sm"
+            className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
           >
             {/* User info */}
             <div className="flex items-center space-x-3 mb-3">
@@ -111,11 +111,7 @@ export default function CommunityScreen({ user }: CommunityScreenProps) {
               <div className="flex-1">
                 <div className="flex items-center space-x-2">
                   <p className="font-semibold text-gray-900 dark:text-white">{post.user.name}</p>
-                  <span
-                    className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getLevelColor(
-                      post.user.level,
-                    )}`}
-                  >
+                  <span className={`px-2 py-1 text-xs font-medium ${getLevelColor(post.user.level)}`}>
                     {post.user.level}
                   </span>
                 </div>
@@ -148,7 +144,7 @@ export default function CommunityScreen({ user }: CommunityScreenProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-6">
                 <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-red-500">
                   <Heart className="w-5 h-5" />

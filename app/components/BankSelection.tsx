@@ -68,7 +68,7 @@ export default function BankSelection({ setCurrentScreen, selectedBanks, setSele
                 className={`relative p-6 rounded-2xl border-2 transition-all duration-200 ${
                   isSelected
                     ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
-                    : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-500"
+                    : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-500"
                 }`}
               >
                 <div

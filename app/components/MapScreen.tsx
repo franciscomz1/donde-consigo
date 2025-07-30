@@ -37,7 +37,7 @@ export default function MapScreen() {
   return (
     <div className="h-full">
       {/* Header */}
-      <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dónde Consigo</h1>
@@ -73,7 +73,7 @@ export default function MapScreen() {
 
       {viewMode === "map" ? (
         /* Map View */
-        <div className="relative h-full bg-gray-200 dark:bg-gray-700">
+        <div className="relative h-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -97,11 +97,11 @@ export default function MapScreen() {
         </div>
       ) : (
         /* List View */
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
           {mockLocations.map((location) => (
             <div
               key={location.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-600 shadow-sm"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-300 dark:border-gray-600 shadow-sm"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">

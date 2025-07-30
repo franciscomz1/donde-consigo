@@ -58,7 +58,7 @@
   }
 }
 
-/* Custom scrollbar styles */
+/* Utility classes for better compatibility */
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
