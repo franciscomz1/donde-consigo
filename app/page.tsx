@@ -1,62 +1,57 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import type { User, Bank } from "./types"
-import OnboardingCarousel from "./components/OnboardingCarousel"
-import LoginScreen from "./components/LoginScreen"
-import RegisterScreen from "./components/RegisterScreen"
-import SignInScreen from "./components/SignInScreen"
-import BankSelection from "./components/BankSelection"
-import PersonalizedSummary from "./components/PersonalizedSummary"
-import LocationPermission from "./components/LocationPermission"
-import NotificationPermission from "./components/NotificationPermission"
-import WelcomeReward from "./components/WelcomeReward"
-import MainApp from "./components/MainApp"
+import { useState } from "react"
+import OnboardingScreen from "./components/OnboardingScreen"
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<string>("onboarding")
-  const [user, setUser] = useState<User | null>(null)
-  const [selectedBanks, setSelectedBanks] = useState<Bank[]>([])
-  const [darkMode, setDarkMode] = useState(false)
+  const [currentScreen, setCurrentScreen] = useState(0)
 
-  useEffect(() => {
-    // Check if user has completed onboarding before
-    const hasCompletedOnboarding = localStorage.getItem("hasCompletedOnboarding")
-    if (hasCompletedOnboarding) {
-      setCurrentScreen("main")
+  const screens = [
+    {
+      icon: "gift",
+      title: "Promos todos los días",
+      subtitle: "Descubrí qué banco te conviene según el día y tu tarjeta",
+      gradient: "from-pink-400 via-purple-400 to-indigo-400",
+      buttonText: "Siguiente",
+    },
+    {
+      icon: "location",
+      title: "Descuentos cerca tuyo",
+      subtitle: "Buscá ofertas en tiempo real por ubicación o categoría",
+      gradient: "from-cyan-400 via-blue-400 to-purple-400",
+      buttonText: "Siguiente",
+    },
+    {
+      icon: "star",
+      title: "Sumá y ganá puntos",
+      subtitle: "Compartí promociones, sumá puntos y canjeá beneficios",
+      gradient: "from-emerald-400 via-teal-400 to-cyan-400",
+      buttonText: "Empezar",
+    },
+  ]
+
+  const handleNext = () => {
+    if (currentScreen < screens.length - 1) {
+      setCurrentScreen(currentScreen + 1)
+    } else {
+      // Handle completion - navigate to main app
+      console.log("Onboarding completed!")
     }
-  }, [])
-
-  const handleCompleteOnboarding = () => {
-    localStorage.setItem("hasCompletedOnboarding", "true")
-    setCurrentScreen("main")
   }
 
-  const screenProps = {
-    user,
-    setUser,
-    selectedBanks,
-    setSelectedBanks,
-    darkMode,
-    setDarkMode,
-    setCurrentScreen,
-    onCompleteOnboarding: handleCompleteOnboarding,
+  const handleDotClick = (index: number) => {
+    setCurrentScreen(index)
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        {currentScreen === "onboarding" && <OnboardingCarousel onStart={() => setCurrentScreen("login")} />}
-        {currentScreen === "login" && <LoginScreen {...screenProps} />}
-        {currentScreen === "register" && <RegisterScreen {...screenProps} />}
-        {currentScreen === "signin" && <SignInScreen {...screenProps} />}
-        {currentScreen === "bankSelection" && <BankSelection {...screenProps} />}
-        {currentScreen === "personalizedSummary" && <PersonalizedSummary {...screenProps} />}
-        {currentScreen === "locationPermission" && <LocationPermission {...screenProps} />}
-        {currentScreen === "notificationPermission" && <NotificationPermission {...screenProps} />}
-        {currentScreen === "welcomeReward" && <WelcomeReward {...screenProps} />}
-        {currentScreen === "main" && <MainApp {...screenProps} />}
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <OnboardingScreen
+        {...screens[currentScreen]}
+        currentStep={currentScreen}
+        totalSteps={screens.length}
+        onNext={handleNext}
+        onDotClick={handleDotClick}
+      />
     </div>
   )
 }
