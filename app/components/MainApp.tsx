@@ -7,7 +7,7 @@ import PromosScreen from "./PromosScreen"
 import MapScreen from "./MapScreen"
 import CommunityScreen from "./CommunityScreen"
 import ProfileScreen from "./ProfileScreen"
-import Button from "./ui/button" // Assuming Button component is imported from a local file
+import Button from "./button" // Assuming Button component is imported from a local file
 import type { User, Bank } from "../types"
 
 interface MainAppProps {
