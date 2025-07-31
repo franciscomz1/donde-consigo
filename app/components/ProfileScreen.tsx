@@ -1,173 +1,354 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Settings, Calendar, Trophy, Gift, Moon, Sun, LogOut, Edit } from "lucide-react"
-import type { User } from "../types"
-import GamificationBadge from "./GamificationBadge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Settings, Calendar, Moon, Sun, LogOut, Edit, Camera, History, Bell, Trophy, Star } from "lucide-react"
+import type { UserProfile } from "../types"
+import ProgressBar from "./ProgressBar"
+import BadgeCollection from "./BadgeCollection"
+import MissionCard from "./MissionCard"
+import { authService } from "../services/auth"
+import SuccessToast from "./SuccessToast"
 
 interface ProfileScreenProps {
-  user: User | null
+  user: UserProfile | null
   darkMode: boolean
   setDarkMode: (dark: boolean) => void
+  setCurrentScreen?: (screen: string) => void
+  setUser?: (user: UserProfile | null) => void
 }
 
-export default function ProfileScreen({ user, darkMode, setDarkMode }: ProfileScreenProps) {
+export default function ProfileScreen({ user, darkMode, setDarkMode, setCurrentScreen, setUser }: ProfileScreenProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editForm, setEditForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    avatar: user?.avatar || "👤",
+  })
+  const [showHistory, setShowHistory] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [toastMessage, setToastMessage] = useState("")
+
   if (!user) return null
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Novato":
-        return "from-green-400 to-green-600"
-      case "Experto":
-        return "from-blue-400 to-blue-600"
-      case "Leyenda":
-        return "from-purple-400 to-purple-600"
-      default:
-        return "from-gray-400 to-gray-600"
-    }
+  const showToast = (message: string) => {
+    setToastMessage(message)
+    setTimeout(() => setToastMessage(""), 3000)
   }
 
+  const handleLogout = () => {
+    authService.logout()
+    if (setUser) setUser(null)
+    if (setCurrentScreen) {
+      setCurrentScreen("login")
+    } else {
+      window.location.reload()
+    }
+    showToast("Sesión cerrada correctamente")
+  }
+
+  const handleSaveProfile = () => {
+    if (setUser) {
+      setUser({
+        ...user,
+        name: editForm.name,
+        email: editForm.email,
+        avatar: editForm.avatar,
+      })
+    }
+    setIsEditing(false)
+    showToast("Perfil actualizado correctamente")
+  }
+
+  const avatarOptions = ["👤", "👨", "👩", "👨‍💼", "👩‍💼", "👨‍🎓", "👩‍🎓", "🧑‍💻", "👨‍🔧", "👩‍🔬"]
+
+  // Misiones disponibles
+  const missions = [
+    {
+      id: "complete-profile",
+      title: "Completá tu perfil",
+      description: "Agregá tu foto y información personal",
+      icon: "👤",
+      points: 50,
+      completed: user.name !== "Usuario",
+      action: () => setIsEditing(true),
+      actionText: "Completar ahora",
+    },
+    {
+      id: "first-referral",
+      title: "Invitá a tu primer amigo",
+      description: "Compartí tu código de referido",
+      icon: "👥",
+      points: 100,
+      completed: false,
+      progress: 0,
+      total: 1,
+      action: () => {
+        // Abrir modal de invitación
+        showToast("¡Compartí tu código para ganar puntos!")
+      },
+      actionText: "Invitar amigo",
+    },
+    {
+      id: "daily-streak",
+      title: "Usá la app 7 días seguidos",
+      description: "Mantené tu racha diaria activa",
+      icon: "🔥",
+      points: 75,
+      completed: (user.streak || 0) >= 7,
+      progress: Math.min(user.streak || 0, 7),
+      total: 7,
+    },
+  ]
+
+  const mockPromoHistory = [
+    {
+      id: "1",
+      title: "20% OFF en Farmacity",
+      date: "Hace 2 días",
+      likes: 24,
+      status: "Activa",
+      points: 25,
+    },
+    {
+      id: "2",
+      title: "15% OFF en Coto",
+      date: "Hace 1 semana",
+      likes: 12,
+      status: "Expirada",
+      points: 25,
+    },
+  ]
+
+  const mockPointsHistory = [
+    { id: "1", action: "Invitación aceptada", points: 100, date: "Hace 1 día", type: "referral" },
+    { id: "2", action: "Perfil completado", points: 50, date: "Hace 2 días", type: "profile" },
+    { id: "3", action: "Promo compartida", points: 25, date: "Hace 3 días", type: "share" },
+    { id: "4", action: "Login diario", points: 5, date: "Hace 4 días", type: "daily" },
+  ]
+
   return (
-    <div className="p-4">
-      {/* Profile header */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 mb-6 border border-gray-200 dark:border-gray-700">
+    <div className="p-4 space-y-6">
+      {/* Enhanced Profile Header */}
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-4 mb-6">
-          <div
-            className={`w-20 h-20 bg-gradient-to-br ${getLevelColor(user.level)} rounded-2xl flex items-center justify-center shadow-lg`}
-          >
-            <span className="text-white text-2xl font-bold">{user.name.charAt(0)}</span>
-          </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">{user.email}</p>
-            <div className="flex items-center space-x-2">
-              <span
-                className={`px-3 py-1 bg-gradient-to-r ${getLevelColor(user.level)} text-white text-sm font-medium rounded-full`}
-              >
-                {user.level}
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">Nivel actual</span>
+          <div className="relative">
+            <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg text-3xl">
+              {user.avatar || user.name.charAt(0)}
             </div>
-          </div>
-          <Button variant="ghost" size="sm" className="rounded-full">
-            <Edit className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Points display */}
-        <div className="bg-gradient-to-r from-sky-50 to-purple-50 dark:from-sky-900/20 dark:to-purple-900/20 rounded-2xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{user.points}</p>
-              <p className="text-gray-600 dark:text-gray-300">Puntos totales</p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold text-sky-600 dark:text-sky-400">+15</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Esta semana</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Gamification badges */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <GamificationBadge type="streak" count={7} title="Días seguidos" />
-          <GamificationBadge type="explorer" count={12} title="Lugares visitados" />
-          <GamificationBadge type="saver" count={850} title="$ Ahorrados" />
-        </div>
-
-        {/* Logros recientes */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Logros recientes</h3>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
-              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">🔥</div>
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white text-sm">¡Racha de 7 días!</p>
-                <p className="text-xs text-gray-600 dark:text-gray-300">Usaste la app toda la semana</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">🗺️</div>
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white text-sm">Explorador</p>
-                <p className="text-xs text-gray-600 dark:text-gray-300">Visitaste 12 comercios diferentes</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick actions */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <Button
-            variant="ghost"
-            className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
-          >
-            <Gift className="w-6 h-6 text-sky-500" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Canjear puntos</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="h-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2"
-          >
-            <Trophy className="w-6 h-6 text-yellow-500" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Ranking</span>
-          </Button>
-        </div>
-
-        {/* Stats */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Mis estadísticas</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Promociones compartidas</span>
-              <span className="font-semibold text-gray-900 dark:text-white">12</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Likes recibidos</span>
-              <span className="font-semibold text-gray-900 dark:text-white">89</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Puntos canjeados</span>
-              <span className="font-semibold text-gray-900 dark:text-white">150</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Settings */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Configuración</h3>
-          <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
-              <Settings className="w-5 h-5 mr-3" />
-              Editar bancos preferidos
-            </Button>
-            <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
-              <Calendar className="w-5 h-5 mr-3" />
-              Ver calendario personalizado
-            </Button>
             <Button
               variant="ghost"
-              onClick={() => setDarkMode(!darkMode)}
-              className="w-full justify-between h-12 text-gray-700 dark:text-gray-200"
+              size="sm"
+              className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-600 text-white p-0"
+              onClick={() => setIsEditing(true)}
             >
-              <div className="flex items-center">
-                {darkMode ? <Sun className="w-5 h-5 mr-3" /> : <Moon className="w-5 h-5 mr-3" />}
-                Modo {darkMode ? "claro" : "oscuro"}
-              </div>
+              <Camera className="w-4 h-4" />
             </Button>
           </div>
+
+          <div className="flex-1">
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Nombre
+                  </Label>
+                  <Input
+                    id="name"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 block">Avatar</Label>
+                  <div className="flex space-x-2 overflow-x-auto pb-2">
+                    {avatarOptions.map((avatar) => (
+                      <button
+                        key={avatar}
+                        type="button"
+                        onClick={() => setEditForm({ ...editForm, avatar })}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-200 ${
+                          editForm.avatar === avatar
+                            ? "bg-sky-500 scale-110 shadow-lg"
+                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {avatar}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button onClick={handleSaveProfile} size="sm" className="bg-green-500 hover:bg-green-600 rounded-xl">
+                    Guardar
+                  </Button>
+                  <Button onClick={() => setIsEditing(false)} variant="ghost" size="sm" className="rounded-xl">
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-3">{user.email}</p>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Miembro desde {new Date(user.joinDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
+          {!isEditing && (
+            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="rounded-full">
+              <Edit className="w-5 h-5" />
+            </Button>
+          )}
         </div>
 
-        {/* Logout */}
+        {/* Progress Bar */}
+        <div className="mb-6">
+          <ProgressBar currentPoints={Number(user.points) || 0} currentLevel={user.level || "Novato"} animated={true} />
+        </div>
+
+        {/* Enhanced Stats */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl">
+            <div className="text-2xl font-bold text-green-600">{Number(user.points) || 0}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Puntos totales</div>
+          </div>
+          <div className="text-center p-3 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl">
+            <div className="text-2xl font-bold text-orange-500">#{Math.floor(Math.random() * 50) + 1}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Ranking</div>
+          </div>
+          <div className="text-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl">
+            <div className="text-2xl font-bold text-blue-500">{Number(user.streak) || 0}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Días seguidos</div>
+          </div>
+          <div className="text-center p-3 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl">
+            <div className="text-2xl font-bold text-purple-500">${Number(user.totalSavings) || 0}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-300">Ahorrado</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Missions Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+          <Trophy className="w-5 h-5 text-yellow-500 mr-2" />
+          Misiones disponibles
+        </h3>
+        <div className="space-y-4">
+          {missions.map((mission) => (
+            <MissionCard key={mission.id} mission={mission} />
+          ))}
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+          <Star className="w-5 h-5 text-yellow-500 mr-2" />
+          Tus logros
+        </h3>
+        <BadgeCollection achievements={user.achievements || []} />
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 gap-4">
         <Button
-          variant="ghost"
-          className="w-full h-12 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl"
+          onClick={() => setShowHistory(true)}
+          variant="outline"
+          className="h-20 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2 hover:border-blue-300 dark:hover:border-blue-600"
         >
-          <LogOut className="w-5 h-5 mr-3" />
-          Cerrar sesión
+          <History className="w-6 h-6 text-blue-500" />
+          <span className="text-sm font-medium text-gray-900 dark:text-white">Historial de puntos</span>
+        </Button>
+        <Button
+          onClick={() => setShowNotifications(true)}
+          variant="outline"
+          className="h-20 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center space-y-2 hover:border-purple-300 dark:hover:border-purple-600 relative"
+        >
+          <Bell className="w-6 h-6 text-purple-500" />
+          <span className="text-sm font-medium text-gray-900 dark:text-white">Notificaciones</span>
+          <div className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
         </Button>
       </div>
+
+      {/* Settings */}
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Configuración</h3>
+        <div className="space-y-2">
+          <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
+            <Settings className="w-5 h-5 mr-3" />
+            Editar bancos preferidos
+          </Button>
+          <Button variant="ghost" className="w-full justify-start h-12 text-gray-700 dark:text-gray-200">
+            <Calendar className="w-5 h-5 mr-3" />
+            Mis alertas
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-full justify-between h-12 text-gray-700 dark:text-gray-200"
+          >
+            <div className="flex items-center">
+              {darkMode ? <Sun className="w-5 h-5 mr-3" /> : <Moon className="w-5 h-5 mr-3" />}
+              Modo {darkMode ? "claro" : "oscuro"}
+            </div>
+          </Button>
+        </div>
+      </div>
+
+      {/* Logout */}
+      <Button
+        onClick={handleLogout}
+        variant="ghost"
+        className="w-full h-12 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl"
+      >
+        <LogOut className="w-5 h-5 mr-3" />
+        Cerrar sesión
+      </Button>
+
+      {/* Points History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Historial de puntos</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowHistory(false)} className="rounded-full">
+                ✕
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {mockPointsHistory.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{entry.action}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{entry.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-green-600">+{entry.points}</p>
+                    <p className="text-xs text-gray-500">puntos</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <SuccessToast message={toastMessage} />
     </div>
   )
 }
