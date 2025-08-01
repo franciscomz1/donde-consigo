@@ -1,118 +1,87 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import OnboardingCarousel from "./components/OnboardingCarousel"
-import LoginScreen from "./components/LoginScreen"
-import RegisterScreen from "./components/RegisterScreen"
-import SignInScreen from "./components/SignInScreen"
-import FavoritesSelection from "./components/FavoritesSelection"
-import PersonalizedRecommendations from "./components/PersonalizedRecommendations"
-import LocationPermission from "./components/LocationPermission"
-import NotificationPermission from "./components/NotificationPermission"
-import WelcomeReward from "./components/WelcomeReward"
-import MainApp from "./components/MainApp"
-import CongratulationsModal from "./components/CongratulationsModal"
-import ProfileOnboardingModal from "./components/ProfileOnboardingModal"
-import type { User, Bank } from "./types"
+import { EnhancedOnboardingFlow } from "@/components/onboarding/enhanced-onboarding-flow"
+import { HomePage } from "@/components/home/home-page"
+import { LoadingScreen } from "@/components/ui/loading-screen"
+import { useSound } from "@/lib/hooks/use-sound"
 
-export default function App() {
-  const [currentScreen, setCurrentScreen] = useState("onboarding")
-  const [darkMode, setDarkMode] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const [selectedBanks, setSelectedBanks] = useState<Bank[]>([])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [mounted, setMounted] = useState(false)
+export default function Page() {
+  const [showOnboarding, setShowOnboarding] = useState(true)
+  const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { playSound } = useSound()
 
-  // Asegurar que el componente esté montado antes de hacer cualquier operación
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    // Simular carga inicial con datos reales
+    const loadApp = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
-  // Solo renderizar después de que el componente esté montado
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
+      // Check if user has completed onboarding
+      const hasCompletedOnboarding = localStorage.getItem("onboarding_completed")
+      const userData = localStorage.getItem("user_data")
 
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case "onboarding":
-        return <OnboardingCarousel onStart={() => setCurrentScreen("login")} />
+      if (hasCompletedOnboarding && userData) {
+        try {
+          const parsedUser = JSON.parse(userData)
+          setUser(parsedUser)
+          setShowOnboarding(false)
+          playSound("welcome")
+        } catch (error) {
+          console.error("Error parsing user data:", error)
+          localStorage.removeItem("onboarding_completed")
+          localStorage.removeItem("user_data")
+        }
+      }
 
-      case "login":
-        return <LoginScreen setCurrentScreen={setCurrentScreen} darkMode={darkMode} setDarkMode={setDarkMode} />
-
-      case "register":
-        return <RegisterScreen setCurrentScreen={setCurrentScreen} />
-
-      case "signin":
-        return <SignInScreen setCurrentScreen={setCurrentScreen} setUser={setUser} />
-
-      case "favoritesSelection":
-        return (
-          <FavoritesSelection
-            setCurrentScreen={setCurrentScreen}
-            selectedBanks={selectedBanks}
-            setSelectedBanks={setSelectedBanks}
-          />
-        )
-
-      case "personalizedRecommendations":
-        return (
-          <PersonalizedRecommendations
-            setCurrentScreen={setCurrentScreen}
-            selectedBanks={selectedBanks}
-            selectedCategories={selectedCategories}
-          />
-        )
-
-      case "locationPermission":
-        return <LocationPermission setCurrentScreen={setCurrentScreen} />
-
-      case "notificationPermission":
-        return <NotificationPermission setCurrentScreen={setCurrentScreen} />
-
-      case "welcomeReward":
-        return (
-          <WelcomeReward
-            setCurrentScreen={setCurrentScreen}
-            setUser={setUser}
-            onCompleteOnboarding={() => setCurrentScreen("main")}
-          />
-        )
-
-      case "congratulations":
-        return <CongratulationsModal setCurrentScreen={setCurrentScreen} user={user as User} />
-
-      case "profileOnboarding":
-        return <ProfileOnboardingModal setCurrentScreen={setCurrentScreen} user={user as User} setUser={setUser} />
-
-      case "main":
-        return (
-          <MainApp
-            user={user}
-            selectedBanks={selectedBanks}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            setCurrentScreen={setCurrentScreen}
-            setUser={setUser}
-          />
-        )
-
-      default:
-        return <OnboardingCarousel onStart={() => setCurrentScreen("login")} />
+      setIsLoading(false)
     }
+
+    loadApp()
+  }, [playSound])
+
+  const handleOnboardingComplete = (userData: any) => {
+    // Clean the userData to remove any circular references
+    const cleanUserData = {
+      id: userData.id || `user_${Date.now()}`,
+      name: userData.name || "",
+      email: userData.email || "",
+      profilePhoto: userData.profilePhoto || null,
+      favoriteBanks: userData.favoriteBanks || [],
+      preferences: userData.preferences || {
+        categories: [],
+        notifications: {
+          newPromos: true,
+          locationAlerts: true,
+          achievements: true,
+          weeklyDigest: false,
+        },
+      },
+      completedAt: userData.completedAt || new Date().toISOString(),
+      // Only store essential gamification data
+      points: userData.points || 0,
+      level: userData.level || 1,
+      badges: userData.badges || [],
+      streak: userData.streak || 0,
+      totalActions: userData.totalActions || 0,
+      favoritePromos: [],
+      viewedTutorial: false,
+    }
+
+    localStorage.setItem("onboarding_completed", "true")
+    localStorage.setItem("user_data", JSON.stringify(cleanUserData))
+    setUser(cleanUserData)
+    setShowOnboarding(false)
+    playSound("success")
   }
 
-  return (
-    <div className={`min-h-screen ${darkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">{renderScreen()}</div>
-    </div>
-  )
+  if (isLoading) {
+    return <LoadingScreen />
+  }
+
+  if (showOnboarding) {
+    return <EnhancedOnboardingFlow onComplete={handleOnboardingComplete} />
+  }
+
+  return <HomePage user={user} setUser={setUser} />
 }
